@@ -2,7 +2,7 @@ n               Search Time(ms)
 100000000       25                                                                
 110000000       26
 120000000       28
-130000000       30
+130000000       30                                   ![Image](https://github.com/user-attachments/assets/52db1ea0-a627-4a21-960a-dc1cf3bc4d5e)
 140000000       33
 150000000       36
 160000000       51
