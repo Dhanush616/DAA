@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.Random;
 
 public class MergeSortAnalysis {
@@ -7,37 +6,15 @@ public class MergeSortAnalysis {
         System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "1");
 
         int increment = 100000;
-        int maxSize = 1500000;
+        int maxSize = 2500000;
         Random random = new Random();
 
-        System.out.printf("%-10s %-15s %-15s %-15s\n", "Size", "Best Case (ms)", "Worst Case (ms)", "Average Case (ms)");
+        System.out.printf("%-10s %-15s\n", "Size", "Average Case (ms)");
         for (int size = increment; size <= maxSize; size += increment) {
-            int[] bestCase = generateBestCase(size);
-            int[] worstCase = generateWorstCase(size);
-            int[] averageCase = generateAverageCase(size, random);
-
-            long bestTime = timeMergeSort(Arrays.copyOf(bestCase, bestCase.length));
-            long worstTime = timeMergeSort(Arrays.copyOf(worstCase, worstCase.length));
-            long averageTime = timeMergeSort(Arrays.copyOf(averageCase, averageCase.length));
-
-            System.out.printf("%-10d %-15d %-15d %-15d\n", size, bestTime, worstTime, averageTime);
+            int[] array = generateAverageCase(size, random);
+            long averageTime = timeMergeSort(array);
+            System.out.printf("%-10d %-15d\n", size, averageTime);
         }
-    }
-
-    private static int[] generateBestCase(int size) {
-        int[] array = new int[size];
-        for (int i = 0; i < size; i++) {
-            array[i] = i;
-        }
-        return array;
-    }
-
-    private static int[] generateWorstCase(int size) {
-        int[] array = new int[size];
-        for (int i = 0; i < size; i++) {
-            array[i] = size - i;
-        }
-        return array;
     }
 
     private static int[] generateAverageCase(int size, Random random) {
