@@ -1,0 +1,11 @@
+Enter the number of vertices: 4
+Enter the number of edges: 4
+Enter the edges (source, destination, weight) with source and destination as alphabets:
+A B 2
+B C 5
+C D 3
+D A 2
+Edges in the Minimum Spanning Tree:
+A - B : 2
+D - A : 2
+C - D : 3
