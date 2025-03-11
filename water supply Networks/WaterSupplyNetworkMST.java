@@ -1,84 +1,57 @@
 import java.util.*;
 
-class Edge implements Comparable<Edge> {
-    int source, destination, weight;
+class WaterSupplyNetworkMST {
+    private int vertices;
+    private int[][] graph;
 
-    public Edge(int source, int destination, int weight) {
-        this.source = source;
-        this.destination = destination;
-        this.weight = weight;
-    }
-
-    @Override
-    public int compareTo(Edge otherEdge) {
-        return this.weight - otherEdge.weight;
-    }
-}
-
-class Subset {
-    int parent, rank;
-}
-
-public class WaterSupplyNetworkMST {
-    int vertices, edgesCount;
-    Edge[] edges;
-
-    public WaterSupplyNetworkMST(int vertices, int edgesCount) {
+    public WaterSupplyNetworkMST(int vertices) {
         this.vertices = vertices;
-        this.edgesCount = edgesCount;
-        edges = new Edge[edgesCount];
+        graph = new int[vertices][vertices];
     }
 
-    int find(Subset[] subsets, int i) {
-        if (subsets[i].parent != i) {
-            subsets[i].parent = find(subsets, subsets[i].parent);
-        }
-        return subsets[i].parent;
+    public void addEdge(char source, char destination, int weight) {
+        int u = source - 'A';
+        int v = destination - 'A';
+        graph[u][v] = weight;
+        graph[v][u] = weight;
     }
 
-    void union(Subset[] subsets, int x, int y) {
-        int xRoot = find(subsets, x);
-        int yRoot = find(subsets, y);
+    private int minKey(int[] key, boolean[] mstSet) {
+        int min = Integer.MAX_VALUE, minIndex = -1;
 
-        if (subsets[xRoot].rank < subsets[yRoot].rank) {
-            subsets[xRoot].parent = yRoot;
-        } else if (subsets[xRoot].rank > subsets[yRoot].rank) {
-            subsets[yRoot].parent = xRoot;
-        } else {
-            subsets[yRoot].parent = xRoot;
-            subsets[xRoot].rank++;
+        for (int v = 0; v < vertices; v++) {
+            if (!mstSet[v] && key[v] < min) {
+                min = key[v];
+                minIndex = v;
+            }
         }
+        return minIndex;
     }
 
-    public void mst() {
-        Edge[] result = new Edge[vertices - 1];
-        int edgeIndex = 0;
-        int resultIndex = 0;
+    public void primMST() {
+        int[] parent = new int[vertices];
+        int[] key = new int[vertices];
+        boolean[] mstSet = new boolean[vertices];
 
-        Arrays.sort(edges);
+        Arrays.fill(key, Integer.MAX_VALUE);
+        key[0] = 0;
+        parent[0] = -1;
 
-        Subset[] subsets = new Subset[vertices];
-        for (int v = 0; v < vertices; ++v) {
-            subsets[v] = new Subset();
-            subsets[v].parent = v;
-            subsets[v].rank = 0;
-        }
+        for (int count = 0; count < vertices - 1; count++) {
+            int u = minKey(key, mstSet);
+            mstSet[u] = true;
 
-        while (resultIndex < vertices - 1 && edgeIndex < edgesCount) {
-            Edge nextEdge = edges[edgeIndex++];
-
-            int x = find(subsets, nextEdge.source);
-            int y = find(subsets, nextEdge.destination);
-
-            if (x != y) {
-                result[resultIndex++] = nextEdge;
-                union(subsets, x, y);
+            for (int v = 0; v < vertices; v++) {
+                if (graph[u][v] != 0 && !mstSet[v] && graph[u][v] < key[v]) {
+                    parent[v] = u;
+                    key[v] = graph[u][v];
+                }
             }
         }
 
         System.out.println("Edges in the Minimum Spanning Tree:");
-        for (int i = 0; i < resultIndex; ++i) {
-            System.out.println((char)(result[i].source + 'A') + " - " + (char)(result[i].destination + 'A') + " : " + result[i].weight);
+        for (int i = 1; i < vertices; i++) {
+            System.out.println((char) (parent[i] + 'A') + " - " + (char) (i + 'A') + " : " + graph[i][parent[i]]);
         }
     }
 
@@ -86,23 +59,21 @@ public class WaterSupplyNetworkMST {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter the number of vertices: ");
         int vertices = scanner.nextInt();
-
+        
+        WaterSupplyNetworkMST network = new WaterSupplyNetworkMST(vertices);
+        
         System.out.print("Enter the number of edges: ");
-        int edgesCount = scanner.nextInt();
-
-        WaterSupplyNetworkMST graph = new WaterSupplyNetworkMST(vertices, edgesCount);
+        int edges = scanner.nextInt();
 
         System.out.println("Enter the edges (source, destination, weight) with source and destination as alphabets:");
-        for (int i = 0; i < edgesCount; i++) {
-            char sourceChar = scanner.next().charAt(0);
-            char destinationChar = scanner.next().charAt(0);
+        for (int i = 0; i < edges; i++) {
+            char source = scanner.next().charAt(0);
+            char destination = scanner.next().charAt(0);
             int weight = scanner.nextInt();
-            int source = sourceChar - 'A';
-            int destination = destinationChar - 'A';
-            graph.edges[i] = new Edge(source, destination, weight);
+            network.addEdge(source, destination, weight);
         }
-
-        graph.mst();
+        
+        network.primMST();
         scanner.close();
     }
 }
